@@ -22,9 +22,9 @@
   --c-living: #d9a400;        /* ₱500 yellow */
   --c-savings: #2e9e5b;       /* ₱200 green */
 
-  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-display: var(--font-bricolage), "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: var(--font-inter), "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains), "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   --radius: 14px;
   --radius-sm: 8px;
@@ -341,17 +341,17 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; marg
 
 /* ---------- Chart ---------- */
 .chart-wrap { width: 100%; }
-#chart { display: block; width: 100%; height: 210px; touch-action: pan-y; }
-#chart text { font-family: var(--font-mono); font-size: 10.5px; fill: var(--muted); }
-#chart .grid-line { stroke: var(--line); stroke-width: 1; }
-#chart .target-line { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.55; }
-#chart .target-label { fill: var(--ink); opacity: 0.75; }
-#chart .area { fill: var(--c-savings); opacity: 0.14; }
-#chart .line { fill: none; stroke: var(--c-savings); stroke-width: 2; stroke-linejoin: round; }
-#chart .end-dot { fill: var(--c-savings); stroke: var(--surface); stroke-width: 2; }
-#chart .guide { stroke: var(--muted); stroke-width: 1; }
-#chart .guide-dot { fill: var(--surface); stroke: var(--c-savings); stroke-width: 2; }
-#chart .empty { font-family: var(--font-body); font-size: 13px; }
+.chart { display: block; width: 100%; height: 210px; touch-action: pan-y; }
+.chart text { font-family: var(--font-mono); font-size: 10.5px; fill: var(--muted); }
+.chart .grid-line { stroke: var(--line); stroke-width: 1; }
+.chart .target-line { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.55; }
+.chart .target-label { fill: var(--ink); opacity: 0.75; }
+.chart .area { fill: var(--c-savings); opacity: 0.14; }
+.chart .line { fill: none; stroke: var(--c-savings); stroke-width: 2; stroke-linejoin: round; }
+.chart .end-dot { fill: var(--c-savings); stroke: var(--surface); stroke-width: 2; }
+.chart .guide { stroke: var(--muted); stroke-width: 1; }
+.chart .guide-dot { fill: var(--surface); stroke: var(--c-savings); stroke-width: 2; }
+.chart .empty { font-family: var(--font-body); font-size: 13px; }
 .chart-readout { margin: -6px 0 0; font-size: 0.84rem; color: var(--muted); font-family: var(--font-mono); min-height: 1.5em; }
 .chart-readout b { color: var(--ink); font-weight: 500; }
 

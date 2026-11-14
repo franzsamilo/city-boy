@@ -1,10 +1,27 @@
 {
   "name": "makati-budget",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
-  "description": "A flexible monthly budget for living in Makati on a USD income. Re-plans itself as the USD→PHP rate moves.",
+  "description": "A flexible monthly budget for living in Makati on a USD income. Re-plans itself as the USD\u2192PHP rate moves.",
   "scripts": {
-    "start": "python3 -m http.server 8080",
-    "test": "node --test"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --test test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "16.4.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22.18"
   }
 }
