@@ -1,0 +1,10 @@
+{
+  "name": "makati-budget",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A flexible monthly budget for living in Makati on a USD income. Re-plans itself as the USD→PHP rate moves.",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "test": "node --test"
+  }
+}

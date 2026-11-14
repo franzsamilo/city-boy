@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Makati Budget</title>
+  <meta name="description" content="A monthly budget for living in Makati on a USD income. It re-plans itself as the USD→PHP rate moves.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="brand">
+        <h1>Makati Budget</h1>
+        <p>Paid in dollars, spent in pesos. The plan re-works itself every time the rate moves.</p>
+      </div>
+      <button class="fx-chip" id="fxChip" type="button" aria-describedby="fxChipHint">
+        <span class="fx-dot" id="fxDot" aria-hidden="true"></span>
+        <span class="fx-main">$1 = <strong id="fxChipRate">₱—</strong></span>
+        <span class="fx-sub" id="fxChipSub">checking…</span>
+      </button>
+      <span class="sr-only" id="fxChipHint">Refresh the exchange rate</span>
+    </header>
+
+    <!-- Summary: the four numbers that matter this month -->
+    <section class="summary" aria-label="This month">
+      <div class="tile">
+        <span class="label">Take-home</span>
+        <span class="big" id="sumIncome">₱—</span>
+        <span class="sub" id="sumIncomeSub">&nbsp;</span>
+      </div>
+      <div class="tile">
+        <span class="label">Rent, bills &amp; subscriptions</span>
+        <span class="big" id="sumFixed">₱—</span>
+        <span class="sub" id="sumFixedSub">&nbsp;</span>
+      </div>
+      <div class="tile">
+        <span class="label">Spending money</span>
+        <span class="big" id="sumLiving">₱—</span>
+        <span class="sub" id="sumLivingSub">&nbsp;</span>
+      </div>
+      <div class="tile tile-savings">
+        <span class="label">Savings</span>
+        <span class="big" id="sumSavings">₱—</span>
+        <span class="sub"><span class="pill" id="sumSavingsPill">—</span> <span id="sumSavingsSub"></span></span>
+      </div>
+    </section>
+
+    <section class="split" aria-label="Where the money goes">
+      <div class="bar" id="bar" role="img"></div>
+      <ul class="legend" id="legend"></ul>
+      <p class="insight" id="insight"></p>
+    </section>
+
+    <main class="grid">
+      <!-- The plan -->
+      <section class="panel plan" aria-labelledby="planTitle">
+        <div class="panel-head">
+          <h2 id="planTitle">Monthly plan</h2>
+          <p class="hint" id="planHint">Two paychecks a month.</p>
+        </div>
+        <div class="row row-head" aria-hidden="true">
+          <span class="c-name">Item</span>
+          <span class="c-amt">Amount</span>
+          <span class="c-month">Per month</span>
+          <span class="c-check">Per paycheck</span>
+          <span class="c-del"></span>
+        </div>
+        <div id="planBody"></div>
+
+        <div class="group group-savings">
+          <div class="group-head">
+            <h3>Savings</h3>
+            <span class="group-note" id="savingsNote"></span>
+          </div>
+          <div class="row row-calc">
+            <span class="c-name name-static">Savings this month</span>
+            <span class="c-amt goal-static" id="savingsGoalCell"></span>
+            <output class="num c-month" id="savingsMonth"></output>
+            <output class="num c-check" id="savingsCheck"></output>
+            <span class="c-del"></span>
+          </div>
+        </div>
+
+        <div class="row row-total">
+          <span class="c-name">Total = take-home</span>
+          <span class="c-amt"></span>
+          <output class="num c-month" id="totalMonth"></output>
+          <output class="num c-check" id="totalCheck"></output>
+          <span class="c-del"></span>
+        </div>
+        <p class="footnote"><span class="est">est.</span> marks numbers I guessed. Type your real amount and the tag goes away.</p>
+      </section>
+
+      <aside class="side">
+        <!-- Exchange rate -->
+        <section class="panel" aria-labelledby="rateTitle">
+          <div class="panel-head">
+            <h2 id="rateTitle">Exchange rate</h2>
+            <p class="hint">Which rate should the plan use?</p>
+          </div>
+          <div class="seg" role="radiogroup" aria-labelledby="rateTitle" id="rateSeg">
+            <label class="seg-opt"><input type="radio" name="rateBasis" id="basis-live" value="live"><span class="seg-name">Today</span><span class="seg-val" id="valLive">—</span></label>
+            <label class="seg-opt"><input type="radio" name="rateBasis" id="basis-avg30" value="avg30"><span class="seg-name">30-day avg</span><span class="seg-val" id="valAvg30">—</span></label>
+            <label class="seg-opt"><input type="radio" name="rateBasis" id="basis-low90" value="low90"><span class="seg-name">90-day low</span><span class="seg-val" id="valLow90">—</span></label>
+            <label class="seg-opt"><input type="radio" name="rateBasis" id="basis-custom" value="custom"><span class="seg-name">What if</span><span class="seg-val" id="valCustom">—</span></label>
+          </div>
+          <div class="custom" id="customBox">
+            <label for="customRate">Try a rate</label>
+            <div class="custom-row">
+              <span class="prefix">₱</span>
+              <input type="number" id="customRate" step="0.05" min="30" max="100" inputmode="decimal">
+              <input type="range" id="customRange" min="55" max="72" step="0.05" aria-label="Exchange rate slider">
+            </div>
+          </div>
+          <p class="hint" id="basisHint"></p>
+          <div class="fx-status">
+            <span id="fxStatus">Checking the rate…</span>
+            <button type="button" class="link-btn" id="refreshBtn">Refresh</button>
+          </div>
+        </section>
+
+        <!-- Flex rule -->
+        <section class="panel" aria-labelledby="flexTitle">
+          <div class="panel-head">
+            <h2 id="flexTitle">When the rate moves</h2>
+            <p class="hint">A stronger dollar is a raise; a weaker one is a pay cut. Decide where that lands.</p>
+          </div>
+          <div class="field">
+            <label for="savingsTarget">Savings goal per month</label>
+            <div class="money-input"><span class="prefix">₱</span><input type="number" id="savingsTarget" min="0" step="500" inputmode="numeric"></div>
+          </div>
+          <div class="field">
+            <label for="flex">Who takes the swing</label>
+            <input type="range" id="flex" min="0" max="100" step="10">
+            <div class="flex-ends"><span>Spending</span><span>Savings</span></div>
+            <p class="flex-readout" id="flexReadout"></p>
+          </div>
+          <p class="explain" id="flexExplain"></p>
+        </section>
+
+        <!-- History chart -->
+        <section class="panel" aria-labelledby="chartTitle">
+          <div class="panel-head">
+            <h2 id="chartTitle">Last 90 days</h2>
+            <p class="hint">What this plan would save at each day's rate.</p>
+          </div>
+          <div class="chart-wrap">
+            <svg id="chart" role="img" aria-label="Savings at each day's exchange rate over the last 90 days"></svg>
+          </div>
+          <p class="chart-readout" id="chartReadout">&nbsp;</p>
+        </section>
+
+        <!-- Paychecks -->
+        <section class="panel" aria-labelledby="payTitle">
+          <div class="panel-head">
+            <h2 id="payTitle">Paychecks</h2>
+          </div>
+          <div class="fields-2">
+            <div class="field">
+              <label for="usdPerPaycheck">Per paycheck</label>
+              <div class="money-input"><span class="prefix usd">$</span><input type="number" id="usdPerPaycheck" min="0" step="5" inputmode="decimal"></div>
+            </div>
+            <div class="field">
+              <label for="schedule">Paid</label>
+              <select id="schedule">
+                <option value="biweekly">Every 2 weeks</option>
+                <option value="semimonthly">15th &amp; end of month</option>
+              </select>
+            </div>
+            <div class="field" id="anchorField">
+              <label for="anchorPayday">A real payday <span class="est" id="anchorEst">est.</span></label>
+              <input type="date" id="anchorPayday">
+            </div>
+            <div class="field">
+              <label for="feePct">Conversion fee</label>
+              <div class="money-input"><input type="number" id="feePct" min="0" max="10" step="0.1" inputmode="decimal"><span class="suffix">%</span></div>
+            </div>
+          </div>
+          <p class="hint">If Wise, Payoneer or your bank pays out below the market rate, put the gap in Conversion fee (for example 1.5).</p>
+          <div class="paydays" id="paydays"></div>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="foot">
+      <p>Rates: <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener">ExchangeRate-API</a> (today) and <a href="https://frankfurter.dev" target="_blank" rel="noopener">Frankfurter</a> / ECB (history). Your numbers stay in this browser. Bar colors borrowed from peso bills.</p>
+      <button type="button" class="link-btn" id="resetBtn">Reset to my starting plan</button>
+    </footer>
+  </div>
+
+  <script src="budget.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
